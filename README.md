@@ -1,5 +1,7 @@
 # TalkTownServer
- Social network on website. Socialize, make friends and more.
+<p style="text-align: center;">Social network on website. Socialize, make friends and more.</p>
+
+
  ![image](https://github.com/TaiTitans/TalkTown/assets/70010376/a8664a0d-4053-4792-8e57-853e6de29a70)
 
 
