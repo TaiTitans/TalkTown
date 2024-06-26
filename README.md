@@ -21,6 +21,7 @@ Backend:
 + Docker
 ...
 Database:
++ Redis
 + PostgreSQL
 + Cloudinary
 ...
