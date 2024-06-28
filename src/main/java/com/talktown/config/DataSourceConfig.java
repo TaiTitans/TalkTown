@@ -9,8 +9,8 @@ import org.springframework.core.env.Environment;
 import javax.sql.DataSource;
 
 @Configuration
-public class DataSourceConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(DataSourceConfiguration.class);
+public class DataSourceConfig {
+    private static final Logger logger = LoggerFactory.getLogger(DataSourceConfig.class);
     @Bean
     public DataSource dataSource(Environment env) {
         String url = env.getProperty("DB_URL");
