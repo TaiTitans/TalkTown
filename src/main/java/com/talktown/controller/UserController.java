@@ -5,10 +5,7 @@ import com.talktown.dto.UserDTO;
 import com.talktown.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -17,9 +14,9 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<StatusResponse<String>> registerUser(@RequestBody UserDTO userDTO){
+    public ResponseEntity<StatusResponse<String>> registerUser(@RequestBody UserDTO userDTO, @RequestParam String otp){
         try{
-            userService.registerUser(userDTO);
+            userService.registerUser(userDTO, otp);
             return ResponseEntity.ok(new StatusResponse<>("Success", "User registered successfully", null));
         } catch(Exception e){
             return ResponseEntity.internalServerError().body(new StatusResponse<>("Error", "An unexpected error occurred", null));

@@ -33,15 +33,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         logger.info("Security Filter Chain");
         http
-                .csrf().disable()
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**/register").permitAll()
-                        .requestMatchers("/api/**/login").permitAll()
-                        .requestMatchers("/api/**/common/**").hasAnyRole("CUSTOMER", "MANAGER", "ADMIN")
-                        .requestMatchers("/api/**").hasRole("ADMIN")
-                        .requestMatchers("/api/**/manager/**").hasRole("MANAGER")
-                        .anyRequest().authenticated()
-                ).addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .csrf().disable();
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/api/v[1-5]/register").permitAll()
+//                        .requestMatchers("/api/v[1-5]/login").permitAll()
+//                        .requestMatchers("/api/v[1-5]/otp").permitAll()
+//                        .requestMatchers("/api/v[1-5]/common/**").hasAnyRole("CUSTOMER", "MANAGER", "ADMIN")
+//                        .requestMatchers("/api/v[1-5]/manager/**").hasRole("MANAGER")
+//                        .anyRequest().authenticated()
+//                ).addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
