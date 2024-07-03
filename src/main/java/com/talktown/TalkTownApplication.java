@@ -22,7 +22,6 @@ public class TalkTownApplication {
         System.setProperty("REDIS_HOST", dotenv.get("REDIS_HOST"));
         System.setProperty("REDIS_PORT", dotenv.get("REDIS_PORT"));
         System.setProperty("REDIS_PASSWORD", dotenv.get("REDIS_PASSWORD"));
-
         SpringApplication.run(TalkTownApplication.class, args);
     }
 
