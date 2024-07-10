@@ -16,7 +16,6 @@ Backend:
 + O2Auth
 + RestfulAPI
 + SocketIO
-+ RabbitMQ
 + Kafka
 + Docker
 ...
