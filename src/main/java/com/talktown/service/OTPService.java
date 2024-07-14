@@ -1,8 +1,6 @@
 package com.talktown.service;
 
 import com.talktown.common.IpAddressInfo;
-import com.talktown.config.RedisConfig;
-import com.talktown.dto.EmailDTO;
 import com.talktown.entity.User;
 import com.talktown.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +27,6 @@ public class OTPService {
 
     private final JedisPool jedisPool;
     private final long OTP_EXPIRATION_MINUTES = 3;
-    private final long OTP_REQUEST_EXPIRATION_MINUTES = 60; // 1 hour
     private final int MAX_OTP_SEND_COUNT_PER_IP = 5;
 
     @Autowired
@@ -54,33 +51,63 @@ public class OTPService {
             return jedis.get(email);
         }
     }
-
-    public void sendOtp(String email, HttpServletRequest request) {
-        // Check if email is already registered
+    public void sendOTPForRegistration(String email, HttpServletRequest httpRequest) {
+        // Kiểm tra email đã đăng ký chưa
         if (userRepository.findByEmail(email) != null) {
-            throw new IllegalArgumentException("Email already registered");
+            throw new IllegalArgumentException("Email is already registered");
         }
 
-        // Get IP address information
-        String ipAddress = getClientIpAddress(request);
-        IpAddressInfo ipAddressInfo = ipAddressService.getIpAddressInfo(ipAddress);
-        if (ipAddressInfo != null && ipAddressInfo.sendCount >= MAX_OTP_SEND_COUNT_PER_IP) {
-            throw new IllegalArgumentException("Maximum number of OTP send requests reached for this IP address");
-        }
+        // Kiểm tra giới hạn số lần gửi OTP từ IP address
+        checkIPAddressLimit(httpRequest);
 
-        // Generate and save OTP
+        // Tạo và lưu OTP
         String otp = generateOTP();
         saveOTP(email, otp);
 
-        // Send OTP to email
+        // Gửi OTP đến email
         emailService.sendOTPEmail(email, otp);
-
-        // Update IP address information
-        int newSendCount = ipAddressInfo != null ? ipAddressInfo.sendCount + 1 : 1;
-        String lastSendTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        ipAddressService.saveIpAddressInfo(ipAddress, newSendCount, lastSendTime);
     }
 
+    public void sendOTPForChangeEmail(String currentEmail, String newEmail, HttpServletRequest httpRequest) {
+        // Kiểm tra email hiện tại có đăng ký không
+        User user = userRepository.findByEmail(currentEmail);
+        if (user == null) {
+            throw new IllegalArgumentException("Current email is not registered");
+        }
+
+        // Kiểm tra email mới đã đăng ký chưa
+        if (userRepository.findByEmail(newEmail) != null) {
+            throw new IllegalArgumentException("New email is already registered");
+        }
+
+        // Kiểm tra giới hạn số lần gửi OTP từ IP address
+        checkIPAddressLimit(httpRequest);
+
+        // Tạo và lưu OTP
+        String otp = generateOTP();
+        saveOTP(newEmail, otp);
+
+        // Gửi OTP đến email
+        emailService.sendOTPEmail(newEmail, otp);
+    }
+
+    public void sendOTPForForgotPassword(String email, HttpServletRequest httpRequest) {
+        // Kiểm tra email có đăng ký không
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("Email is not registered");
+        }
+
+        // Kiểm tra giới hạn số lần gửi OTP từ IP address
+        checkIPAddressLimit(httpRequest);
+
+        // Tạo và lưu OTP
+        String otp = generateOTP();
+        saveOTP(email, otp);
+
+        // Gửi OTP đến email
+        emailService.sendOTPEmail(email, otp);
+    }
     public boolean isOTPValid(String email, String otp) {
         // Kiểm tra xem mã OTP có hợp lệ và chưa hết hạn không
         try (Jedis jedis = jedisPool.getResource()) {
@@ -89,11 +116,27 @@ public class OTPService {
         }
     }
 
-    public String getClientIpAddress(HttpServletRequest request) {
+    public void checkIPAddressLimit(HttpServletRequest request) {
+        // Get IP address information
+        String ipAddress = getClientIpAddress(request);
+        IpAddressInfo ipAddressInfo = ipAddressService.getIpAddressInfo(ipAddress);
+        if (ipAddressInfo != null && ipAddressInfo.sendCount >= MAX_OTP_SEND_COUNT_PER_IP) {
+            throw new IllegalArgumentException("Maximum number of OTP send requests reached for this IP address");
+        }
+
+        // Update IP address information
+        int newSendCount = ipAddressInfo != null ? ipAddressInfo.sendCount + 1 : 1;
+        String lastSendTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        ipAddressService.saveIpAddressInfo(ipAddress, newSendCount, lastSendTime);
+    }
+
+    private String getClientIpAddress(HttpServletRequest request) {
         String ipAddress = request.getHeader("X-Forwarded-For");
         if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getRemoteAddr();
         }
         return ipAddress;
     }
+
+
 }

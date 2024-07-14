@@ -24,4 +24,18 @@ public class UserController {
     }
 
 
+    @PatchMapping("/user/{id}")
+    public ResponseEntity<StatusResponse<UserDTO>> updateEmail(@PathVariable int id, @RequestBody UserDTO userDTO, @RequestParam String otp){
+        try{
+            userService.updateEmail(userDTO, otp, id);
+            return ResponseEntity.ok(new StatusResponse<>("Success", "User updated successfully", userDTO));
+        } catch(Exception e){
+            return ResponseEntity.internalServerError().body(new StatusResponse<>("Error", "An unexpected error occurred", null));
+        }
+    }
+
+
+
+
+
 }

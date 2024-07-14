@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 
+import java.util.Optional;
 
 
 @Service
@@ -41,11 +42,37 @@ public class UserService {
         return modelMapper.map(userDTO, User.class);
     }
 
+    public void updateEmail(UserDTO userDTO, String otpInput, int id) {
+        try {
+            if (userRepository.existsById(id)) {
+                Optional<User> optionalUser = userRepository.findById(id);
+                if (!optionalUser.isPresent()) {
+                    throw new IllegalArgumentException("User not found");
+                }
+                User user = optionalUser.get();
+                User existingEmail = userRepository.findByEmail(userDTO.email);
+                if (existingEmail != null) {
+                    throw new IllegalArgumentException("Email already exists");
+                }
+
+                String otp = otpService.getOTPFromRedis(userDTO.email);
+                if (otp == null || !otp.equals(otpInput)) {
+                    throw new IllegalArgumentException("Invalid OTP");
+                }
+                user.setEmail(userDTO.email);
+                userRepository.save(user);
+
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred", e);
+        }
+    }
+
 
     public void registerUser(UserDTO userDTO, String otpInput) {
         try {
             // Kiểm tra xem tên đăng nhập đã tồn tại chưa
-            User existingUsername = userRepository.findByUsername(userDTO.email);
+            User existingUsername = userRepository.findByUsername(userDTO.username);
             if (existingUsername != null) {
                 throw new IllegalArgumentException("Username already registered");
             }

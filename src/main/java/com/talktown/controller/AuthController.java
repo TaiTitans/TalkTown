@@ -1,5 +1,6 @@
 package com.talktown.controller;
 
+import com.talktown.common.SendOTPRequest;
 import com.talktown.common.StatusResponse;
 import com.talktown.config.SecurityConfig;
 import com.talktown.dto.EmailDTO;
@@ -18,10 +19,10 @@ public class AuthController {
     @Autowired
     private OTPService otpService;
 
-    @PostMapping("/otp")
-    public ResponseEntity<StatusResponse<String>> sendOTP(@RequestParam String email, HttpServletRequest request) {
+    @PostMapping("/otp/signup")
+    public ResponseEntity<StatusResponse<String>> sendOTPRegister(@RequestParam String email, HttpServletRequest request) {
         try {
-            otpService.sendOtp(email, request);
+            otpService.sendOTPForRegistration(email, request);
             return ResponseEntity.ok(new StatusResponse<>("Success", "Send OTP Success", null));
         } catch (IllegalArgumentException e) {
             log.error("Error sending OTP: {}", e.getMessage(), e);
@@ -32,6 +33,30 @@ public class AuthController {
         }
     }
 
-
-
+    @PostMapping("/otp/email")
+    public ResponseEntity<StatusResponse<String>> sendOTPForChangeEmail(@RequestParam String currentEmail, @RequestParam String newEmail, HttpServletRequest request) {
+        try {
+            otpService.sendOTPForChangeEmail(currentEmail, newEmail, request);
+            return ResponseEntity.ok(new StatusResponse<>("Success", "Send OTP Success", null));
+        } catch (IllegalArgumentException e) {
+            log.error("Error sending OTP: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new StatusResponse<>("Error", e.getMessage(), null));
+        } catch (Exception e) {
+            log.error("Unexpected error occurred while sending OTP", e);
+            return ResponseEntity.internalServerError().body(new StatusResponse<>("Error", "An unexpected error occurred while sending the OTP.", null));
+        }
+    }
+    @PostMapping("/otp/forgot")
+    public ResponseEntity<StatusResponse<String>> sendOTPForForgotPassword(@RequestParam String email, HttpServletRequest request) {
+        try {
+            otpService.sendOTPForForgotPassword(email, request);
+            return ResponseEntity.ok(new StatusResponse<>("Success", "Send OTP Success", null));
+        } catch (IllegalArgumentException e) {
+            log.error("Error sending OTP: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(new StatusResponse<>("Error", e.getMessage(), null));
+        } catch (Exception e) {
+            log.error("Unexpected error occurred while sending OTP", e);
+            return ResponseEntity.internalServerError().body(new StatusResponse<>("Error", "An unexpected error occurred while sending the OTP.", null));
+        }
+    }
 }
