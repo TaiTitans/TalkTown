@@ -45,7 +45,7 @@ public class MailjetEmailService implements EmailSender {
                             "<table width='100%' cellpadding='0' cellspacing='0' style='background-color: #f5f5f5;'>" +
                             "  <tr>" +
                             "    <td align='center' style='padding: 20px 0;'>" +
-                            "      <img src='https://cdn.vectorstock.com/i/500p/70/00/abstract-logo-letter-t-design-vector-40897000.jpg' alt='Talk Town Technology' style='max-width: 200px;'>" +
+                            "      <img src='https://res.cloudinary.com/duwzchnsp/image/upload/v1720011446/ea0nbypctt5ure1tgvxr.png' alt='Talk Town Technology' style='max-width: 200px;'>" +
                             "    </td>" +
                             "  </tr>" +
                             "  <tr>" +
