@@ -106,4 +106,25 @@ public class UserService {
         }
     }
 
+    public void resetPassword(String oldPassword, String newPassword, int id) {
+        try {
+            Optional<User> optionalUser = userRepository.findById(id);
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+                    user.setPassword(passwordEncoder.encode(newPassword));
+                    userRepository.save(user);
+                } else {
+                    throw new IllegalArgumentException("Old password does not match");
+                }
+            } else {
+                throw new IllegalArgumentException("User not found");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred", e);
+        }
+    }
+
+
+
 }

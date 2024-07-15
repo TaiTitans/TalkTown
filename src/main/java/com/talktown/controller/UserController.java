@@ -24,7 +24,7 @@ public class UserController {
     }
 
 
-    @PatchMapping("/user/{id}")
+    @PatchMapping("/user/email/{id}")
     public ResponseEntity<StatusResponse<UserDTO>> updateEmail(@PathVariable int id, @RequestBody UserDTO userDTO, @RequestParam String otp){
         try{
             userService.updateEmail(userDTO, otp, id);
@@ -35,6 +35,15 @@ public class UserController {
     }
 
 
+    @PatchMapping("/user/password/{id}")
+    public ResponseEntity<StatusResponse<String>> resetPassword(@PathVariable int id, @RequestParam String oldPassword, @RequestParam String newPassword){
+        try{
+            userService.resetPassword(oldPassword, newPassword, id);
+            return ResponseEntity.ok(new StatusResponse<>("Success", "Password updated successfully", null));
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body(new StatusResponse<>("Error", "An unexpected error occurred", null));
+        }
+    }
 
 
 
