@@ -2,11 +2,12 @@ package com.talktown.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
 public class UserProfile {
-    public UserProfile(int profile_id, User user_id, String full_name, String bio, Date birthday, char sex, String profile_picture) {
+    public UserProfile(int profile_id, User user_id, String full_name, String bio, LocalDate birthday, char sex, String profile_picture) {
         this.profile_id = profile_id;
         this.user_id = user_id;
         this.full_name = full_name;
@@ -48,11 +49,11 @@ public class UserProfile {
         this.bio = bio;
     }
 
-    public Date getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 
@@ -77,12 +78,12 @@ public class UserProfile {
     private int profile_id;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user_id;
 
     private String full_name;
     private String bio;
-    private Date birthday;
+    private LocalDate birthday;
 
     @Column(nullable = false, length = 1)
     private char sex;
