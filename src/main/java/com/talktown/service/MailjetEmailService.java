@@ -2,14 +2,12 @@ package com.talktown.service;
 
 import com.mailjet.client.ClientOptions;
 import com.mailjet.client.MailjetClient;
-
 import com.mailjet.client.errors.MailjetException;
 import com.mailjet.client.transactional.SendContact;
 import com.mailjet.client.transactional.SendEmailsRequest;
 import com.mailjet.client.transactional.TransactionalEmail;
 import com.mailjet.client.transactional.response.SendEmailsResponse;
 import com.talktown.repository.EmailSender;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

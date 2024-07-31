@@ -1,14 +1,19 @@
 package com.talktown.controller;
 
+import com.talktown.common.LoginRequest;
+import com.talktown.common.LoginResponse;
 import com.talktown.common.StatusResponse;
 import com.talktown.dto.UserDTO;
 import com.talktown.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -24,7 +29,7 @@ public class UserController {
     }
 
 
-    @PatchMapping("/user/{id}")
+    @PatchMapping("/user/email/{id}")
     public ResponseEntity<StatusResponse<UserDTO>> updateEmail(@PathVariable int id, @RequestBody UserDTO userDTO, @RequestParam String otp){
         try{
             userService.updateEmail(userDTO, otp, id);
@@ -35,7 +40,25 @@ public class UserController {
     }
 
 
+    @PatchMapping("/user/password/{id}")
+    public ResponseEntity<StatusResponse<String>> resetPassword(@PathVariable int id, @RequestParam String oldPassword, @RequestParam String newPassword){
+        try{
+            userService.resetPassword(oldPassword, newPassword, id);
+            return ResponseEntity.ok(new StatusResponse<>("Success", "Password updated successfully", null));
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body(new StatusResponse<>("Error", "An unexpected error occurred", null));
+        }
+    }
 
 
+    @PostMapping("/login")
+    public ResponseEntity<StatusResponse<LoginResponse>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
+        try{
+            userService.login(loginRequest, response);
+            return ResponseEntity.ok(new StatusResponse<>("Success", "Login successful", null));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StatusResponse<>("Error", "An unexpected error occurred", null));
+        }
+    }
 
 }

@@ -4,9 +4,7 @@ package com.talktown.service;
 import com.talktown.repository.EmailSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.mail.MailParseException;
-
 import org.springframework.stereotype.Service;
 
 @Service
