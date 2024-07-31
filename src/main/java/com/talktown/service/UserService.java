@@ -1,14 +1,21 @@
 package com.talktown.service;
 
+import com.talktown.common.LoginRequest;
+import com.talktown.common.LoginResponse;
 import com.talktown.dto.UserDTO;
 import com.talktown.entity.Role;
 import com.talktown.entity.User;
 import com.talktown.repository.RoleRepository;
 import com.talktown.repository.UserRepository;
+import com.talktown.util.JwtTokenProvider;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.modelmapper.ModelMapper;
 
 import java.util.Optional;
 
@@ -33,6 +40,10 @@ public class UserService {
 
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    public static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     public UserDTO convertUserToUserDTO(User user) {
         return modelMapper.map(user, UserDTO.class);
@@ -125,6 +136,42 @@ public class UserService {
         }
     }
 
+    public void login(LoginRequest loginRequest, HttpServletResponse response) {
+        try{
+            User user = userRepository.findByUsername(loginRequest.getUsername());
+            if(user != null && passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+                    UserDTO userDTO = convertUserToUserDTO(user);
+                    String accessToken = jwtTokenProvider.generateAccessToken(userDTO);
+                    String refreshToken = jwtTokenProvider.generateRefreshToken(userDTO);
+                    String username = user.getUsername();
 
+                    //AccessToken
+                    Cookie accessTokenCookie = new Cookie("access_token", accessToken);
+                    accessTokenCookie.setHttpOnly(true);
+                    accessTokenCookie.setSecure(true);
+                    accessTokenCookie.setPath("/");
+                    accessTokenCookie.setMaxAge(3600);
+                    response.addCookie(accessTokenCookie);
+                    //RefreshToken
+                    Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
+                    refreshTokenCookie.setHttpOnly(true);
+                    refreshTokenCookie.setSecure(true);
+                    refreshTokenCookie.setPath("/");
+                    refreshTokenCookie.setMaxAge(259200);
+                    response.addCookie(refreshTokenCookie);
+                    //Username
+                    Cookie usernameCookie = new Cookie("username", username);
+                    usernameCookie.setHttpOnly(true);
+                    usernameCookie.setSecure(true);
+                    usernameCookie.setPath("/");
+                    usernameCookie.setMaxAge(259200);
+                    response.addCookie(usernameCookie);
+            }else{
+                throw new IllegalArgumentException("User not found");
+            }
+        }catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred", e);
+        }
+    }
 
 }

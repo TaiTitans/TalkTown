@@ -12,6 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Configuration
@@ -33,16 +36,28 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         logger.info("Security Filter Chain");
         http
-                .csrf().disable();
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/v[1-5]/register").permitAll()
-//                        .requestMatchers("/api/v[1-5]/login").permitAll()
-//                        .requestMatchers("/api/v[1-5]/otp").permitAll()
-//                        .requestMatchers("/api/v[1-5]/common/**").hasAnyRole("CUSTOMER", "MANAGER", "ADMIN")
-//                        .requestMatchers("/api/v[1-5]/manager/**").hasRole("MANAGER")
-//                        .anyRequest().authenticated()
-//                ).addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/register").permitAll()
+                        .requestMatchers("/api/otp/**").permitAll()
+                        .requestMatchers("/api/v1/common/**").hasAnyRole("CUSTOMER", "MANAGER", "ADMIN")
+                        .requestMatchers("/api/v1/manager/**").hasRole("MANAGER")
+                        .anyRequest().authenticated()
+                ).csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
 
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

@@ -2,6 +2,7 @@ package com.talktown.dto;
 
 import jakarta.validation.constraints.Size;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -17,7 +18,5 @@ public class UserProfileDTO {
     public char sex;
     @Size(max=200, message = "Max length 200")
     public String bio;
-
-    public String profile_picture;
 
 }

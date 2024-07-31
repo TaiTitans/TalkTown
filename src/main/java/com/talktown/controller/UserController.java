@@ -1,14 +1,19 @@
 package com.talktown.controller;
 
+import com.talktown.common.LoginRequest;
+import com.talktown.common.LoginResponse;
 import com.talktown.common.StatusResponse;
 import com.talktown.dto.UserDTO;
 import com.talktown.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -46,5 +51,14 @@ public class UserController {
     }
 
 
+    @PostMapping("/login")
+    public ResponseEntity<StatusResponse<LoginResponse>> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
+        try{
+            userService.login(loginRequest, response);
+            return ResponseEntity.ok(new StatusResponse<>("Success", "Login successful", null));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new StatusResponse<>("Error", "An unexpected error occurred", null));
+        }
+    }
 
 }
