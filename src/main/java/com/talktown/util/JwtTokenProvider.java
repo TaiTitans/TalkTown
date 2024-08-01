@@ -47,9 +47,9 @@ public class JwtTokenProvider {
 
     public String generateAccessToken(UserDTO userDTO) {
         return Jwts.builder()
-                .setSubject(String.format("%s,%s", userDTO.user_id, userDTO.username))
+                .setSubject(String.format("%s,%s", userDTO.getUser_id(), userDTO.getUsername()))
                 .setIssuer("TitansDev")
-                .claim("roles", userDTO.roles)
+                .claim("roles", userDTO.getRoles())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis()+ accessTokenExpirationInMs))
                 .signWith(SignatureAlgorithm.HS512, secret)
@@ -58,9 +58,9 @@ public class JwtTokenProvider {
 
     public String generateRefreshToken(UserDTO userDTO) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("user_id", userDTO.user_id);
-        claims.put("roles", userDTO.roles);
-        return doGenerateToken(claims, userDTO.username, refreshTokenExpirationInMs);
+        claims.put("user_id", userDTO.getUser_id());
+        claims.put("roles", userDTO.getRoles());
+        return doGenerateToken(claims, userDTO.getUsername(), refreshTokenExpirationInMs);
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject, long expirationInMs) {
@@ -76,15 +76,14 @@ public class JwtTokenProvider {
     public String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+            return bearerToken.substring(7).trim();
         }
         return null;
     }
-
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-            return true;
+            return !isTokenExpired(token);
         } catch (Exception e) {
             return false;
         }
@@ -96,6 +95,8 @@ public class JwtTokenProvider {
                 .getBody();
     }
 
-
+    public int getUserIdFromToken(String token) {
+        return getClaimFromToken(token, claims -> Integer.parseInt(claims.getSubject().split(",")[0]));
+    }
 
 }

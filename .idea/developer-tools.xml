@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DeveloperToolsToolWindowSettingsV1" lastSelectedContentNodeId="jwt-encoder-decoder">
+    <developerToolsConfigurations>
+      <developerToolConfiguration developerToolId="jwt-encoder-decoder" id="71f10106-3d07-4982-832f-f9b4d1d23c2e" name="Workbench">
+        <properties>
+          <property key="headerText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;alg&quot;:&quot;HS512&quot;&#13;&#10;}" />
+          <property key="payloadText" type="INPUT" value="kotlin.String|{&#13;&#10;  &quot;sub&quot;:&quot;2,titansdev&quot;,&#13;&#10;  &quot;iss&quot;:&quot;TitansDev&quot;,&#13;&#10;  &quot;roles&quot;:[&#13;&#10;    &quot;com.talktown.entity.Role@2668d4c4&quot;&#13;&#10;  ],&#13;&#10;  &quot;iat&quot;:1722515389,&#13;&#10;  &quot;exp&quot;:1722518989&#13;&#10;}" />
+          <property key="secret" type="SECRET" value="kotlin.String|SAVED_IN_KEYSTORE" />
+          <property key="encodedText" type="INPUT" value="kotlin.String|eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyLHRpdGFuc2RldiIsImlzcyI6IlRpdGFuc0RldiIsInJvbGVzIjpbImNvbS50YWxrdG93bi5lbnRpdHkuUm9sZUAyNjY4ZDRjNCJdLCJpYXQiOjE3MjI1MTUzODksImV4cCI6MTcyMjUxODk4OX0.MSt2pXu67TPzB7EajKG4Gem1HesxC7KM8NS1bxEViYZurvPmTr6h8DnAlq26l9eRoGZJnvssiM6BVD5uI_Uw" />
+          <property key="privateKey" type="SECRET" value="kotlin.String|SAVED_IN_KEYSTORE" />
+          <property key="algorithm" type="CONFIGURATION" value="dev.turingcomplete.intellijdevelopertoolsplugin._internal.tool.ui.converter.JwtEncoderDecoder$SignatureAlgorithm|HMAC512" />
+        </properties>
+      </developerToolConfiguration>
+      <developerToolConfiguration developerToolId="base64-encoder-decoder" id="febb37c2-c285-4b8e-9796-8aa1fadfa340" name="Workbench">
+        <properties>
+          <property key="sourceText" type="INPUT" value="kotlin.String|eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyLHRpdGFuc2RldiIsImlzcyI6IlRpdGFuc0RldiIsInJvbGVzIjpbImNvbS50YWxrdG93bi5lbnRpdHkuUm9sZUAyNjY4ZDRjNCJdLCJpYXQiOjE3MjI1MTUzODksImV4cCI6MTcyMjUxODk4OX0.MSt2pXu67TPzB7EajKG4Gem1HesxC7KM8NS1bxEViYZurvPmTr6h8DnAlq26l9eRoGZJnvssiM6BVD5uI_Uw" />
+          <property key="targetText" type="INPUT" value="kotlin.String|ZXlKaGJHY2lPaUpJVXpVeE1pSjkuZXlKemRXSWlPaUl5TEhScGRHRnVjMlJsZGlJc0ltbHpjeUk2SWxScGRHRnVjMFJsZGlJc0luSnZiR1Z6SWpwYkltTnZiUzUwWVd4cmRHOTNiaTVsYm5ScGRIa3VVbTlzWlVBeU5qWTRaRFJqTkNKZExDSnBZWFFpT2pFM01qSTFNVFV6T0Rrc0ltVjRjQ0k2TVRjeU1qVXhPRGs0T1gwLk1TdDJwWHU2N1RQekI3RWFqS0c0R2VtMUhlc3hDN0tNOE5TMWJ4RVZpWVp1cnZQbVRyNmg4RG5BbHEyNmw5ZVJvR1pKbnZzc2lNNkJWRDV1SV9Vdw==" />
+        </properties>
+      </developerToolConfiguration>
+    </developerToolsConfigurations>
+  </component>
+</project>

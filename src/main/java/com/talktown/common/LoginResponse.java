@@ -3,40 +3,40 @@ package com.talktown.common;
 import jakarta.servlet.http.Cookie;
 
 public class LoginResponse {
+    private Cookie accessTokenCookie;
+    private Cookie refreshTokenCookie;
+    private Cookie usernameCookie;
+
     public LoginResponse(String accessToken, String refreshToken, String username) {
-        AccessToken = accessToken;
-        RefreshToken = refreshToken;
-        Username = username;
+        this.accessTokenCookie = createCookie("access_token", accessToken, 3600);
+        this.refreshTokenCookie = createCookie("refresh_token", refreshToken, 259200);
+        this.usernameCookie = createCookie("username", username, 259200);
     }
 
     public LoginResponse(Cookie accessTokenCookie, Cookie refreshTokenCookie, Cookie usernameCookie) {
+        this.accessTokenCookie = accessTokenCookie;
+        this.refreshTokenCookie = refreshTokenCookie;
+        this.usernameCookie = usernameCookie;
     }
 
-    public String getAccessToken() {
-        return AccessToken;
+    private Cookie createCookie(String name, String value, int maxAge) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(maxAge);
+        return cookie;
     }
 
-    public void setAccessToken(String accessToken) {
-        AccessToken = accessToken;
+    public Cookie getAccessTokenCookie() {
+        return accessTokenCookie;
     }
 
-    public String getUsername() {
-        return Username;
+    public Cookie getRefreshTokenCookie() {
+        return refreshTokenCookie;
     }
 
-    public void setUsername(String username) {
-        Username = username;
+    public Cookie getUsernameCookie() {
+        return usernameCookie;
     }
-
-    public String getRefreshToken() {
-        return RefreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        RefreshToken = refreshToken;
-    }
-
-    private String AccessToken;
-    private String RefreshToken;
-    private String Username;
 }

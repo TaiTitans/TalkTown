@@ -61,16 +61,16 @@ public class UserService {
                     throw new IllegalArgumentException("User not found");
                 }
                 User user = optionalUser.get();
-                User existingEmail = userRepository.findByEmail(userDTO.email);
+                User existingEmail = userRepository.findByEmail(userDTO.getEmail());
                 if (existingEmail != null) {
                     throw new IllegalArgumentException("Email already exists");
                 }
 
-                String otp = otpService.getOTPFromRedis(userDTO.email);
+                String otp = otpService.getOTPFromRedis(userDTO.getEmail());
                 if (otp == null || !otp.equals(otpInput)) {
                     throw new IllegalArgumentException("Invalid OTP");
                 }
-                user.setEmail(userDTO.email);
+                user.setEmail(userDTO.getEmail());
                 userRepository.save(user);
 
             }
@@ -83,19 +83,19 @@ public class UserService {
     public void registerUser(UserDTO userDTO, String otpInput) {
         try {
             // Kiểm tra xem tên đăng nhập đã tồn tại chưa
-            User existingUsername = userRepository.findByUsername(userDTO.username);
+            User existingUsername = userRepository.findByUsername(userDTO.getUsername());
             if (existingUsername != null) {
                 throw new IllegalArgumentException("Username already registered");
             }
 
             // Kiểm tra xem email đã tồn tại chưa
-            User existingUserEmail = userRepository.findByEmail(userDTO.email);
+            User existingUserEmail = userRepository.findByEmail(userDTO.getEmail());
             if (existingUserEmail != null) {
                 throw new IllegalArgumentException("Email already registered");
             }
 
             // Validate OTP
-            String otp = otpService.getOTPFromRedis(userDTO.email);
+            String otp = otpService.getOTPFromRedis(userDTO.getEmail());
             if (otp == null || !otp.equals(otpInput)) {
                 throw new IllegalArgumentException("Invalid OTP");
             }
@@ -104,11 +104,11 @@ public class UserService {
             User user = convertUserDTOToUser(userDTO);
 
             // Tìm vai trò mặc định và gán nó cho người dùng
-            Role defaultRole = roleRepository.findByRolename("CUSTOMER");
+            Role defaultRole = roleRepository.findByRolename("ROLE_CUSTOMER");
             user.getRoles().add(defaultRole);
 
             // Mã hóa mật khẩu và lưu người dùng
-            user.setPassword(passwordEncoder.encode(userDTO.password));
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             userRepository.save(user);
         } catch (IllegalArgumentException e) {
             throw e;
@@ -117,9 +117,10 @@ public class UserService {
         }
     }
 
-    public void resetPassword(String oldPassword, String newPassword, int id) {
+    public void resetPassword(String token, String oldPassword, String newPassword) {
         try {
-            Optional<User> optionalUser = userRepository.findById(id);
+            int userId = jwtTokenProvider.getUserIdFromToken(token);
+            Optional<User> optionalUser = userRepository.findById(userId);
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
                 if (passwordEncoder.matches(oldPassword, user.getPassword())) {

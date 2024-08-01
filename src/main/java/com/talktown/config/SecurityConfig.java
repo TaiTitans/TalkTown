@@ -37,11 +37,12 @@ public class SecurityConfig {
         logger.info("Security Filter Chain");
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login").permitAll()
-                        .requestMatchers("/api/register").permitAll()
-                        .requestMatchers("/api/otp/**").permitAll()
-                        .requestMatchers("/api/v1/common/**").hasAnyRole("CUSTOMER", "MANAGER", "ADMIN")
-                        .requestMatchers("/api/v1/manager/**").hasRole("MANAGER")
+                        .requestMatchers("/api/v*/login").permitAll()
+                        .requestMatchers("/api/v*/register").permitAll()
+                        .requestMatchers("/api/v*/otp/**").permitAll()
+                        .requestMatchers("/api/v*/user/**").permitAll()
+                        .requestMatchers("/api/v*/common/**").hasAnyRole("CUSTOMER", "MANAGER", "ADMIN")
+                        .requestMatchers("/api/v*/manager/**").hasRole("MANAGER")
                         .anyRequest().authenticated()
                 ).csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

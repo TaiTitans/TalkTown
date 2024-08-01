@@ -5,6 +5,7 @@ import com.talktown.common.LoginResponse;
 import com.talktown.common.StatusResponse;
 import com.talktown.dto.UserDTO;
 import com.talktown.service.UserService;
+import com.talktown.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
 
     @PostMapping("/register")
     public ResponseEntity<StatusResponse<String>> registerUser(@RequestBody UserDTO userDTO, @RequestParam String otp){
@@ -40,12 +44,18 @@ public class UserController {
     }
 
 
-    @PatchMapping("/user/password/{id}")
-    public ResponseEntity<StatusResponse<String>> resetPassword(@PathVariable int id, @RequestParam String oldPassword, @RequestParam String newPassword){
-        try{
-            userService.resetPassword(oldPassword, newPassword, id);
-            return ResponseEntity.ok(new StatusResponse<>("Success", "Password updated successfully", null));
-        }catch (Exception e){
+    @PatchMapping("/user/password")
+    public ResponseEntity<StatusResponse<String>> resetPassword(@RequestHeader("Authorization") String token, @RequestParam String oldPassword, @RequestParam String newPassword) {
+        try {
+            if (jwtTokenProvider.validateToken(token)) {
+                userService.resetPassword(token, oldPassword, newPassword);
+                return ResponseEntity.ok(new StatusResponse<>("Success", "Password updated successfully", null));
+            } else {
+                return ResponseEntity.badRequest().body(new StatusResponse<>("Error", "Token is not valid", null));
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new StatusResponse<>("Error", e.getMessage(), null));
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new StatusResponse<>("Error", "An unexpected error occurred", null));
         }
     }
