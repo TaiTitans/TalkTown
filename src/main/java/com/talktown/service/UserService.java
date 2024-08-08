@@ -10,10 +10,12 @@ import com.talktown.repository.UserRepository;
 import com.talktown.util.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -116,7 +118,6 @@ public class UserService {
             throw new RuntimeException("An unexpected error occurred", e);
         }
     }
-
     public void resetPassword(String token, String oldPassword, String newPassword) {
         try {
             int userId = jwtTokenProvider.getUserIdFromToken(token);
@@ -147,21 +148,19 @@ public class UserService {
                     String username = user.getUsername();
 
                     //AccessToken
-                    Cookie accessTokenCookie = new Cookie("access_token", accessToken);
+                    Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
                     accessTokenCookie.setHttpOnly(true);
                     accessTokenCookie.setSecure(true);
-                    accessTokenCookie.setPath("/");
                     accessTokenCookie.setMaxAge(3600);
                     response.addCookie(accessTokenCookie);
                     //RefreshToken
-                    Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
+                    Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
                     refreshTokenCookie.setHttpOnly(true);
                     refreshTokenCookie.setSecure(true);
-                    refreshTokenCookie.setPath("/");
                     refreshTokenCookie.setMaxAge(259200);
                     response.addCookie(refreshTokenCookie);
                     //Username
-                    Cookie usernameCookie = new Cookie("username", username);
+                    Cookie usernameCookie = new Cookie("userName", username);
                     usernameCookie.setHttpOnly(true);
                     usernameCookie.setSecure(true);
                     usernameCookie.setPath("/");

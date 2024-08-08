@@ -12,7 +12,9 @@ public class UserDTO {
         this.oauth_id = oauth_id;
         this.roles = roles;
     }
+public UserDTO(){
 
+}
     public Integer getUser_id() {
         return user_id;
     }

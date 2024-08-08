@@ -2,9 +2,7 @@ package com.talktown.util;
 
 
 import com.talktown.dto.UserDTO;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,6 +24,10 @@ public class JwtTokenProvider {
 
     @Value("${jwt.refresh-token-expiration-in-ms}")
     private long refreshTokenExpirationInMs;
+
+    public String extractUsername(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
 
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
@@ -76,15 +78,22 @@ public class JwtTokenProvider {
     public String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7).trim();
+            return bearerToken.substring(7);
         }
         return null;
     }
-    public boolean validateToken(String token) {
+
+    public boolean validateToken(String authHeader) {
+        String token = TokenExtractor.extractToken(authHeader);
+        if (token == null) {
+            return false;
+        }
         try {
+            System.out.println("Token received: " + token);
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return !isTokenExpired(token);
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
